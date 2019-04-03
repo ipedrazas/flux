@@ -1,0 +1,14 @@
+{{- if .Values.helmOperator.configureRepositories.enable -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "flux.helm-repos" . }}
+data:
+{{- if .Values.helmOperator.configureRepositories.ca.enable }}
+  ca.crt: |
+{{ .Values.helmOperator.configureRepositories.ca.content | indent 4 }}
+{{- end }}
+  
+  repositories.yaml: |
+{{ .Values.helmOperator.configureRepositories.content | indent 4 }}
+{{- end -}}

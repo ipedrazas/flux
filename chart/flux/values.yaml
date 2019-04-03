@@ -44,9 +44,11 @@ helmOperator:
   # Mount repositories.yaml configuration in a volume
   configureRepositories:
     enable: false
-    volumeName: repositories-yaml
-    secretName: flux-helm-repositories
     cacheVolumeName: repositories-cache
+    content: ""
+    ca:
+      enable: false
+      content: ""
   # Override Flux git settings
   git:
     pollInterval: ""

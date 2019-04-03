@@ -63,9 +63,20 @@ spec:
       {{- end }}
       {{- end }}
       {{- if .Values.helmOperator.configureRepositories.enable }}
-      - name: {{ .Values.helmOperator.configureRepositories.volumeName | quote }}
-        secret:
-          secretName: {{ .Values.helmOperator.configureRepositories.secretName | quote }}
+      - name: helm-repo
+        configMap:
+          name: {{ template "flux.helm-repos" . }}
+          items:
+            - key: repositories.yaml
+              path: repositories.yaml
+      {{- if .Values.helmOperator.configureRepositories.ca.enable }}
+      - name: helm-repo-ca
+        configMap:
+          name: {{ template "flux.helm-repos" . }}
+          items:
+            - key: ca.crt
+              path: ca.crt
+      {{- end }}
       - name: {{ .Values.helmOperator.configureRepositories.cacheVolumeName | quote }}
         emptyDir: {}
       {{- end }}
@@ -97,8 +108,12 @@ spec:
         {{- end }}
         {{- end }}
         {{- if .Values.helmOperator.configureRepositories.enable }}
-        - name: {{ .Values.helmOperator.configureRepositories.volumeName | quote }}
+        - name: helm-repo
           mountPath: /var/fluxd/helm/repository
+        {{- if .Values.helmOperator.configureRepositories.ca.enable }}
+        - name: helm-repo-ca
+          mountPath: /var/fluxd/helm/ssl
+        {{- end }}
         - name: {{ .Values.helmOperator.configureRepositories.cacheVolumeName | quote }}
           mountPath: /var/fluxd/helm/repository/cache
         {{- end }}
